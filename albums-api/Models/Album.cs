@@ -1,19 +1,35 @@
 ﻿namespace albums_api.Models
 {
-    public record Album(int Id, string Title, string Artist, double Price, string Image_url)
+    public record Album(int Id, string Title, string Artist, int Year, double Price, string Image_url)
     {
+        private static readonly StringComparer SortComparer = StringComparer.OrdinalIgnoreCase;
+
         public static List<Album> GetAll()
         {
             var albums = new List<Album>(){
-            new Album(1, "You, Me and an App Id", "Daprize", 10.99, "https://aka.ms/albums-daprlogo"),
-            new Album(2, "Seven Revision Army", "The Blue-Green Stripes", 13.99, "https://aka.ms/albums-containerappslogo"),
-            new Album(3, "Scale It Up", "KEDA Club", 13.99, "https://aka.ms/albums-kedalogo"),
-            new Album(4, "Lost in Translation", "MegaDNS", 12.99,"https://aka.ms/albums-envoylogo"),
-            new Album(5, "Lock Down Your Love", "V is for VNET", 12.99, "https://aka.ms/albums-vnetlogo"),
-            new Album(6, "Sweet Container O' Mine", "Guns N Probeses", 14.99, "https://aka.ms/albums-containerappslogo")
+            new Album(1, "You, Me and an App Id", "Daprize", 2020, 10.99, "https://aka.ms/albums-daprlogo"),
+            new Album(2, "Seven Revision Army", "The Blue-Green Stripes", 2019, 13.99, "https://aka.ms/albums-containerappslogo"),
+            new Album(3, "Scale It Up", "KEDA Club", 2021, 13.99, "https://aka.ms/albums-kedalogo"),
+            new Album(4, "Lost in Translation", "MegaDNS", 2018, 12.99,"https://aka.ms/albums-envoylogo"),
+            new Album(5, "Lock Down Your Love", "V is for VNET", 2020, 12.99, "https://aka.ms/albums-vnetlogo"),
+            new Album(6, "Sweet Container O' Mine", "Guns N Probeses", 2021, 14.99, "https://aka.ms/albums-containerappslogo")
          };
 
             return albums;
+        }
+
+        public static List<Album> GetAllSorted(string? sortBy)
+        {
+            var albums = GetAll();
+
+            return sortBy?.Trim().ToLowerInvariant() switch
+            {
+                "title" => albums.OrderBy(album => album.Title, SortComparer).ToList(),
+                "artist" => albums.OrderBy(album => album.Artist, SortComparer).ToList(),
+                "price" => albums.OrderBy(album => album.Price).ToList(),
+                null or "" => albums,
+                _ => albums
+            };
         }
 
         public static Album? GetById(int id)
